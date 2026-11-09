@@ -92,7 +92,7 @@
     $("#loading").hidden = false;
     document.querySelectorAll("#dataset-tabs .tab").forEach((t) => t.classList.toggle("active", t.dataset.id === id));
     const ds = await getJSON(`${DATA}/${id}/meta.json`);
-    S.ds = ds; S.coords = {}; S.obs = {}; S.geneCache.clear(); S.hidden.clear();
+    S.bounds = null; S.ds = ds; S.coords = {}; S.obs = {}; S.geneCache.clear(); S.hidden.clear();
     S.geneIndex = new Map(ds.genes.map((g, i) => [g.toUpperCase(), i]));
     await Promise.all(ds.embeddings.map(async (e) => { S.coords[e.name] = new Float32Array(await getBin(`${DATA}/${id}/${e.file}`)); }));
     await Promise.all(ds.fields.map(async (f) => {
@@ -222,7 +222,7 @@
 
   function drawPanel(p) {
     const cv = p.cv, dpr = window.devicePixelRatio || 1;
-    const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+    const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h || !S.bounds || !S.coords[S.emb]) return;
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     const ctx = cv.getContext("2d"), img = ctx.createImageData(cv.width, cv.height);
     const px = new Uint32Array(img.data.buffer), W = cv.width, H = cv.height;
@@ -291,6 +291,7 @@
     if (hoverRaf) return;
     hoverRaf = requestAnimationFrame(() => {
       hoverRaf = null;
+      if (!S.bounds) return;
       const r = cv.getBoundingClientRect(), w = r.width, h = r.height, sc = scaleFor(w, h);
       const mx = e.clientX - r.left, my = e.clientY - r.top;
       const xy = S.coords[S.emb], n = S.ds.n_cells, cx = S.view.cx, cy = S.view.cy;
@@ -432,7 +433,9 @@
     const f = S.ds.fields.find((x) => x.name === $("#violin-group").value), codes = S.obs[f.name], K = f.categories.length;
     const v = S.geneVals.vals, max = S.geneVals.max || 1, groups = Array.from({ length: K }, () => []);
     for (let i = 0; i < codes.length; i++) if (codes[i] < K) groups[codes[i]].push(v[i]);
-    const colW = 56, left = 46, top = 14, plotH = 200, bottom = 90, W = left + K * colW + 10, H = top + plotH + bottom;
+    const maxLab = Math.max(...f.categories.map((c) => c.length)) * 6.6;   // approx label width, px
+    const colW = 56, top = 14, plotH = 200, bottom = 34 + maxLab * 0.65;
+    const left = Math.max(46, maxLab * 0.77 - colW / 2 + 8), W = left + K * colW + 10, H = top + plotH + bottom;
     const svg = sv("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}` });
     const yOf = (val) => top + plotH - (val / max) * plotH;
     [0, 0.5, 1].forEach((t) => {
@@ -508,7 +511,7 @@
       try { localStorage.setItem("atlas-theme", next); } catch (_) {}
       renderAll(); renderLegend(); renderViolin(); if (S.dotLast) renderDot();
     });
-    new ResizeObserver(() => { if (S.ds) { layoutPanels(); renderAll(); } }).observe($("#canvas-wrap"));
+    new ResizeObserver(() => { if (S.ds && S.bounds) { layoutPanels(); renderAll(); } }).observe($("#canvas-wrap"));
   }
 
   init().catch((err) => { $("#loading").textContent = "Failed to load data: " + err.message; console.error(err); });

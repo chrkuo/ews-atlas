@@ -2,6 +2,12 @@
   "title": "Sarcoma Single-Cell Atlas",
   "datasets": [
     {
+      "id": "hayashi",
+      "name": "EwS primary (Hayashi)",
+      "description": "Primary Ewing sarcoma tumors, 7 patients \u2014 tumor and immune/stromal microenvironment",
+      "n_cells": 6228
+    },
+    {
       "id": "tumor",
       "name": "Tumor",
       "description": "Synthetic demo: tumor biopsies at three time points",
@@ -14,5 +20,5 @@
       "n_cells": 20000
     }
   ],
-  "footer": "Demo build \u2014 datasets shown are <b>synthetic</b> placeholders. Replace with your own exports via <code>tools/export_h5ad.py</code>."
+  "footer": "The <b>Tumor</b> and <b>CD3+ PBMC</b> tabs are synthetic demo data."
 }

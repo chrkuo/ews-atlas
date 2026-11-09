@@ -36,12 +36,13 @@ import pandas as pd
 import scipy.sparse as sp
 
 # Tableau/glasbey-like palette, readable on light and dark backgrounds
-PALETTE = [
-    "#4C78A8", "#F58518", "#54A24B", "#E45756", "#72B7B2", "#EECA3B",
-    "#B279A2", "#FF9DA6", "#9D755D", "#BAB0AC", "#1F77B4", "#D62728",
-    "#2CA02C", "#9467BD", "#8C564B", "#E377C2", "#17BECF", "#BCBD22",
-    "#AEC7E8", "#FFBB78", "#98DF8A", "#FF9896", "#C5B0D5", "#C49C94",
-    "#F7B6D2", "#DBDB8D", "#9EDAE5", "#393B79", "#637939", "#8C6D31",
+PALETTE = [  # scanpy's default 20 (so colors match scanpy plots), then extra distinct colors
+    "#1f77b4", "#ff7f0e", "#279e68", "#d62728", "#aa40fc", "#8c564b", "#e377c2",
+    "#b5bd61", "#17becf", "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+    "#c49c94", "#f7b6d2", "#dbdb8d", "#9edae5", "#ad494a", "#8c6d31",
+    "#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
+    "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
+    "#5A0007", "#809693", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
 ]
 
 
@@ -65,7 +66,9 @@ def main():
     ap.add_argument("--layer", default=None, help="layer with normalized expression (default .X)")
     ap.add_argument("--genes", default=None, help="optional text file of genes to keep (one per line)")
     ap.add_argument("--min-cells", type=int, default=3, help="drop genes expressed in fewer cells")
-    ap.add_argument("--out", default=os.path.join(os.path.dirname(__file__), "..", "site", "data"))
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    web = "docs" if os.path.isdir(os.path.join(root, "docs")) else "site"   # GitHub Pages uses docs/
+    ap.add_argument("--out", default=os.path.join(root, web, "data"))
     args = ap.parse_args()
 
     import anndata as ad

@@ -137,3 +137,6 @@ select:focus, input:focus, button:focus-visible { outline: 2px solid var(--focus
   .plot-head { flex-wrap: wrap; }
   .plot-tools { margin-left: 0; }
 }
+
+.row .spacer { flex: 1; }
+#violin-hint select { max-width: 260px; }

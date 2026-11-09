@@ -470,6 +470,51 @@
   function applyTheme(t) {
     if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme");
   }
+  // Export the dot plot or violin as a standalone PNG (3x) or SVG with a title line
+  function exportChart(kind, fmt) {
+    const svg = document.querySelector(kind === "dot" ? "#dot-plot svg" : "#violin-plot svg");
+    if (!svg) { flash(kind === "dot" ? "Make a dot plot first" : "Pick a gene first"); return; }
+    const group = $(kind === "dot" ? "#dot-group" : "#violin-group").value;
+    const title = kind === "dot" ? `${S.ds.name} — dot plot by ${group}` : `${S.ds.name} — ${S.gene} by ${group}`;
+    const C = { "--ink": css("--ink"), "--ink-2": css("--ink-2"), "--line": css("--line"), "--accent": css("--accent") };
+    const resolve = (v) => v.replace(/var\((--[\w-]+)\)/g, (_, k) => C[k] || "#888");
+    const W = +svg.getAttribute("width"), H = +svg.getAttribute("height"), top = 30;
+    const out = sv("svg", { xmlns: SVGNS, width: W, height: H + top, viewBox: `0 0 ${W} ${H + top}` });
+    out.append(sv("rect", { x: 0, y: 0, width: W, height: H + top, fill: css("--surface") }));
+    const t = sv("text", { x: 10, y: 20, "font-size": 14, "font-weight": 600, fill: C["--ink"], "font-family": "Helvetica, Arial, sans-serif" });
+    t.textContent = title; out.append(t);
+    const g = sv("g", { transform: `translate(0,${top})` });
+    svg.cloneNode(true).childNodes.forEach((n) => g.append(n.cloneNode(true)));
+    g.querySelectorAll("*").forEach((n) => {
+      for (const a of ["fill", "stroke", "stop-color"]) { const v = n.getAttribute(a); if (v && v.includes("var(")) n.setAttribute(a, resolve(v)); }
+      if (n.tagName === "text") {
+        if (!n.getAttribute("fill")) n.setAttribute("fill", C["--ink"]);
+        if (!n.getAttribute("font-size")) n.setAttribute("font-size", 12);
+        n.setAttribute("font-family", "Helvetica, Arial, sans-serif");
+      }
+      if (n.classList && n.classList.contains("ax")) n.setAttribute("stroke", C["--line"]);
+      if (n.tagName === "title") n.remove();
+    });
+    out.append(g);
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(out);
+    const safe = (x) => String(x).replace(/[^\w.+-]+/g, "_");
+    const base = kind === "dot" ? `${S.ds.id}_dotplot_by_${safe(group)}` : `${S.ds.id}_${safe(S.gene)}_violin_by_${safe(group)}`;
+    const download = (href, name) => { const a = document.createElement("a"); a.href = href; a.download = name; document.body.append(a); a.click(); a.remove(); };
+    if (fmt === "svg") {
+      const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
+      download(url, base + ".svg"); setTimeout(() => URL.revokeObjectURL(url), 2000);
+      return;
+    }
+    const img = new Image(), scale = 3;
+    img.onload = () => {
+      const cv = document.createElement("canvas"); cv.width = W * scale; cv.height = (H + top) * scale;
+      const ctx = cv.getContext("2d"); ctx.scale(scale, scale); ctx.drawImage(img, 0, 0);
+      cv.toBlob((b) => { const url = URL.createObjectURL(b); download(url, base + ".png"); setTimeout(() => URL.revokeObjectURL(url), 2000); }, "image/png");
+    };
+    img.onerror = () => flash("Couldn't render the image");
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+  }
+
   function savePNG() {
     const cvs = S.panels.map((p) => p.cv); const first = cvs[0];
     const grid = $("#grid").getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
@@ -499,6 +544,10 @@
     $("#save-png").addEventListener("click", savePNG);
     $("#legend-all").addEventListener("click", () => { S.hidden.clear(); renderLegend(); renderAll(); });
     $("#dot-run").addEventListener("click", renderDot);
+    $("#dot-png").addEventListener("click", () => exportChart("dot", "png"));
+    $("#dot-svg").addEventListener("click", () => exportChart("dot", "svg"));
+    $("#violin-png").addEventListener("click", () => exportChart("violin", "png"));
+    $("#violin-svg").addEventListener("click", () => exportChart("violin", "svg"));
     $("#dot-genes").addEventListener("keydown", (e) => { if (e.key === "Enter") renderDot(); });
     $("#dot-group").addEventListener("change", () => S.dotLast && renderDot());
     $("#violin-group").addEventListener("change", renderViolin);

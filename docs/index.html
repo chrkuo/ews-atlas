@@ -75,12 +75,17 @@
           <input id="dot-genes" type="text" spellcheck="false" placeholder="Genes, comma or space separated">
           <select id="dot-group"></select>
           <button id="dot-run" class="btn primary">Plot</button>
+          <button id="dot-png" class="btn" title="Download dot plot as PNG">PNG</button>
+          <button id="dot-svg" class="btn" title="Download dot plot as SVG (editable)">SVG</button>
         </div>
         <div id="dot-plot" class="chart"></div>
       </div>
       <div id="tab-violin" class="tabpane" hidden>
         <div class="row small muted" id="violin-hint">Pick a gene above; grouped by
-          <select id="violin-group"></select></div>
+          <select id="violin-group"></select>
+          <span class="spacer"></span>
+          <button id="violin-png" class="btn" title="Download violin plot as PNG">PNG</button>
+          <button id="violin-svg" class="btn" title="Download violin plot as SVG (editable)">SVG</button></div>
         <div id="violin-plot" class="chart"></div>
       </div>
     </div>

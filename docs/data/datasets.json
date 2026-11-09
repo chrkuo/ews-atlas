@@ -1,24 +1,12 @@
 {
   "title": "Sarcoma Single-Cell Atlas",
+  "footer": "",
   "datasets": [
     {
       "id": "hayashi",
       "name": "EwS primary (Hayashi)",
-      "description": "Primary Ewing sarcoma tumors, 7 patients \u2014 tumor and immune/stromal microenvironment",
+      "description": "Primary Ewing sarcoma tumors, 7 patients — tumor and immune/stromal microenvironment",
       "n_cells": 6228
-    },
-    {
-      "id": "tumor",
-      "name": "Tumor",
-      "description": "Synthetic demo: tumor biopsies at three time points",
-      "n_cells": 30000
-    },
-    {
-      "id": "pbmc",
-      "name": "CD3+ PBMC",
-      "description": "Synthetic demo: circulating T cells at eight time points",
-      "n_cells": 20000
     }
-  ],
-  "footer": "The <b>Tumor</b> and <b>CD3+ PBMC</b> tabs are synthetic demo data."
+  ]
 }

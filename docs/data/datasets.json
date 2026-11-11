@@ -1,12 +1,18 @@
 {
-  "title": "Ewing sarcoma single-cell atlas",
+  "title": "Ewing Sarcoma Single-Cell Atlas",
   "footer": "",
   "datasets": [
     {
       "id": "hayashi",
       "name": "EwS primary (Hayashi)",
-      "description": "Primary Ewing sarcoma tumors, 7 patients — tumor and immune/stromal microenvironment",
+      "description": "Primary Ewing sarcoma tumors, 7 patients \u2014 tumor and immune/stromal microenvironment",
       "n_cells": 6228
+    },
+    {
+      "id": "gse261693",
+      "name": "EwS (GSE261693)",
+      "description": "3 Ewing sarcoma tumors (GEO GSE261693) \u2014 tumor, immune and stromal cells, with TLR4 status",
+      "n_cells": 7246
     }
   ]
 }

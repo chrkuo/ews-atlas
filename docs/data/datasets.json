@@ -5,8 +5,14 @@
     {
       "id": "hayashi",
       "name": "EwS primary (Hayashi)",
-      "description": "Primary Ewing sarcoma tumors, 7 patients — tumor and immune/stromal microenvironment",
+      "description": "Primary Ewing sarcoma tumors, 7 patients \u2014 tumor and immune/stromal microenvironment",
       "n_cells": 6228
+    },
+    {
+      "id": "cillo2022",
+      "name": "Peds sarcoma immune (Cillo 2022)",
+      "description": "Immune cells from tumor (TIL) and blood (PBMC) of Ewing sarcoma and osteosarcoma patients and healthy pediatric donors \u2014 Cillo et al., Clin Cancer Res 2022",
+      "n_cells": 28930
     }
   ]
 }
